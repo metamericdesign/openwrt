@@ -1,9 +1,5 @@
 
 
-```
-gcc binutils bzip2 flex python3 perl make find grep diff unzip gawk getopt
-subversion libz-dev libc-dev rsync which
-```
 
 ### Quickstart
 
@@ -21,5 +17,34 @@ subversion libz-dev libc-dev rsync which
    applications for your target system.
 
 ### Extend File System
+Prerequisites
 
+`opkg update && opkg install block-mount kmod-fs-ext4 kmod-usb-storage kmod-usb-ohci kmod-usb-uhci e2fsprogs fdisk`
+
+```
+DEVICE="$(sed -n -e "/\s\/overlay\s.*$/s///p" /etc/mtab)"
+uci -q delete fstab.rwm
+uci set fstab.rwm="mount"
+uci set fstab.rwm.device="${DEVICE}"
+uci set fstab.rwm.target="/rwm"
+uci commit fstab
+mkfs.ext4 /dev/sda1
+
+DEVICE="/dev/sda1"
+eval $(block info "${DEVICE}" | grep -o -e "UUID=\S*")
+uci -q delete fstab.overlay
+uci set fstab.overlay="mount"
+uci set fstab.overlay.uuid="${UUID}"
+uci set fstab.overlay.target="/overlay"
+uci commit fstab
+mount /dev/sda1 /mnt
+```
+Copy files
+
+`tar -C /overlay -cvf - . | tar -C /mnt/sda1 -xf -`
+
+Extend complete, just unmount and reboot.
+
+`umount /mnt
+reboot`
 
