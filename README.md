@@ -1,7 +1,7 @@
 
 
 
-### Quickstart
+## Quickstart
 
 1. Run `./scripts/feeds update -a` to obtain all the latest package definitions
    defined in feeds.conf / feeds.conf.default
@@ -48,3 +48,39 @@ Extend complete, just unmount and reboot.
 `umount /mnt
 reboot`
 
+
+# OpenVPN
+## Install and Add Users
+Use the provided script in the home folder to install OpenVPN. Use the servers DNS name as the hostname.
+The same script will be used to add users later.
+
+## First time setup
+If the server configuration file does not currently reference a client configuration directory, add one now:
+`client-config-dir ccd`
+In the above directive, ccd should be the name of a directory which has been pre-created in the default directory where the OpenVPN server daemon runs.
+
+### Basestation Clients
+Create a file called 'basestation' in the ccd directory. This file should contain the line:
+`iroute 172.16.1.0 255.255.255.0`
+
+This will tell the OpenVPN server that the 172.16.0.0/24 subnet (Production LAN) should be routed to from the cloud to the base station.
+
+Next, add the following line to the main server config file (not the ccd/basestation file):
+`route 172.16.0.0 255.255.255.0`
+
+Why the redundant route and iroute statements, you might ask? The reason is that route controls the routing from the kernel to the OpenVPN server (via the TUN interface) while iroute controls the routing from the OpenVPN server to the remote clients. Both are necessary.
+
+Add the following to the server config file.
+
+   ```client-to-client
+   push "route 172.16.0.0 255.255.255.0"
+   ```
+   This will cause the OpenVPN server to advertise basestation's subnet to other connecting clients.
+   
+### Firewall and Routing
+
+Cloud to Production
+`iptables -A FORWARD -i tun0 -s 10.8.1.0/24 -d 172.16.1.0/24 -j ACCEPT`
+
+Production to Cloud
+`iptables -A FORWARD -i tun0 -s 172.16.0/24 -d 10.8.0.0/24 -j ACCEPT`
