@@ -79,8 +79,11 @@ Add the following to the server config file.
    
 ### Firewall and Routing
 
-Cloud to Production
+Basestation needs to be set to accept forwarding requests. 
+Network > Firewall > Firewall - Zone Settings > General > Forward : Accept
+
+Cloud to Production (should be setup on boot)
 `iptables -A FORWARD -i tun0 -s 10.8.1.0/24 -d 172.16.1.0/24 -j ACCEPT`
 
-Production to Cloud
+Production to Cloud (should not need this)
 `iptables -A FORWARD -i tun0 -s 172.16.0/24 -d 10.8.0.0/24 -j ACCEPT`
