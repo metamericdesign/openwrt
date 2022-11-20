@@ -55,9 +55,9 @@ Use the provided script in the home folder to install OpenVPN. Use the servers D
 The same script will be used to add users later.
 
 ## First time setup
-A the following line to the main server config file:
+A the following line to the main server config file (/etc/openvpn/server.conf):
 
-`route 172.16.0.0 255.255.255.0`
+`route 172.16.1.0 255.255.255.0`
 
 `client-to-client`
 
@@ -70,9 +70,7 @@ In the above directive, ccd should be the name of a directory which has been pre
 Create a file called 'basestation' in the ccd directory. This file should contain the line:
 `iroute 172.16.1.0 255.255.255.0`
 
-This will tell the OpenVPN server that the 172.16.0.0/24 subnet (Production LAN) should be routed to from the cloud to the base station.
-
-
+This will tell the OpenVPN server that the 172.16.1.0/24 subnet (Production LAN) should be routed to from the cloud to the base station.
 
 ### Firewall and Routing
 
