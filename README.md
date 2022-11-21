@@ -1,7 +1,7 @@
 
 
 
-### Quickstart
+## Quickstart
 
 1. Run `./scripts/feeds update -a` to obtain all the latest package definitions
    defined in feeds.conf / feeds.conf.default
@@ -48,3 +48,37 @@ Extend complete, just unmount and reboot.
 `umount /mnt
 reboot`
 
+
+# OpenVPN
+## Install and Add Users
+Use the provided script in the home folder to install OpenVPN. Use the servers DNS name as the hostname.
+The same script will be used to add users later.
+
+## First time setup
+A the following line to the main server config file (/etc/openvpn/server.conf):
+
+`route 172.16.1.0 255.255.255.0`
+
+`client-to-client`
+
+
+If the server configuration file does not currently reference a client configuration directory, add one now:
+`client-config-dir ccd`
+In the above directive, ccd should be the name of a directory which has been pre-created in the default directory where the OpenVPN server daemon runs.
+
+### Basestation Clients
+Create a file called 'basestation' in the ccd directory. This file should contain the line:
+`iroute 172.16.1.0 255.255.255.0`
+
+This will tell the OpenVPN server that the 172.16.1.0/24 subnet (Production LAN) should be routed to from the cloud to the base station.
+
+### Firewall and Routing
+
+Basestation needs to be set to accept forwarding requests. 
+Network > Firewall > Firewall - Zone Settings > General > Forward : Accept
+
+Cloud to Production (should be setup on boot)
+`iptables -A FORWARD -i tun0 -s 10.8.1.0/24 -d 172.16.1.0/24 -j ACCEPT`
+
+Production to Cloud (should not need this)
+`iptables -A FORWARD -i tun0 -s 172.16.0/24 -d 10.8.0.0/24 -j ACCEPT`
