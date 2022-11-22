@@ -45,8 +45,8 @@ Copy files
 
 Extend complete, just unmount and reboot.
 
-`umount /mnt
-reboot`
+`umount /mnt`
+`reboot`
 
 
 # OpenVPN
