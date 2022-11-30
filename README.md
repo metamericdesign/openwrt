@@ -41,12 +41,12 @@ mount /dev/sda1 /mnt
 ```
 Copy files
 
-`tar -C /overlay -cvf - . | tar -C /mnt/sda1 -xf -`
+`tar -C /overlay -cvf - . | tar -C /mnt -xf -`
 
 Extend complete, just unmount and reboot.
 
-`umount /mnt
-reboot`
+`umount /mnt`
+`reboot`
 
 
 # OpenVPN
