@@ -23,7 +23,7 @@ while(1):
     if os.path.exists(usbPath) and oobPath.is_file():
         syslog.syslog(f'Starting file resize')
         
-        os.system('echo "done" > /root/done.txt')
+        os.system('echo "file resize complete" > /root/fileResizeComplete.txt')
         os.system('rm /root/oobCheck.txt')
 
         os.system('./root/fileresize.sh')
@@ -37,6 +37,7 @@ while(1):
         syslog.syslog(f'OOB check complete, deleting unneeded files')
         syslog.syslog(f'The file {usbPath} exists and {oobPath} does not')
         os.system('echo "oob check complete" > /root/oobCheckComplete.txt')
+        os.system('echo "git clone required" > /root/gitCloneRequired.txt')
         os.system('rm /root/fileresize.sh')
         os.system('rm /etc/init.d/runOobCheck')
         os.system('rm /root/rebootAfterFilesize.py')
