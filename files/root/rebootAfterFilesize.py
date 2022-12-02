@@ -63,22 +63,22 @@ while(1):
         syslog.syslog(f'Clone is required')
 
         if not gsLightingPathexists:
-            os.system('git -C {gitlightingpath} clone {gitlighting}')
+            os.system(f'git -C {gitlightingpath} clone {gitlighting}')
             syslog.syslog(f'gsLighting Clone aquired')
 
         if not baseStationPhpPathexists:
-            os.system('git -C {gitphppath} clone {gitphp}')
+            os.system(f'git -C {gitphppath} clone {gitphp}')
             syslog.syslog(f'baseSationPhp Clone aquired')
         
         if gsLightingPathexists and baseStationPhpPathexists:
 
             time.sleep(7)
-            syslog.syslog(f'all Clones aquired')
+            syslog.syslog('all Clones aquired')
             os.system('rm /root/gitCloneRequired.txt')
             os.system('echo "cloning is complete" > /root/cloningComplete.txt')
 
     elif cloneComplete:
-        syslog.syslog(f'OOB check complete, deleting unneeded files')
+        syslog.syslog('OOB check complete, deleting unneeded files')
         syslog.syslog(f'The file {usbPath} and {cloneCompletePath} exist')
         os.system('echo "oob check complete" > /root/oobCheckComplete.txt')
         os.system('rm /root/fileresize.sh')
