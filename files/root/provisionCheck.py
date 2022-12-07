@@ -17,12 +17,12 @@ provisionCompletePath = Path(path_to_provisionComplete)
 path_to_orgDetails = '/root/systemStateFlags/orgDetails.txt'
 orgDetailsPath = Path(path_to_orgDetails)
 
+time.sleep(10)
+
 syslog.syslog(f'Checking for hardwareOobCompletePath')
 syslog.syslog(f' hardwareOobCompletePathexists = {hardwareOobCompletePathexists}')
 
 prov_url = 'http://gsvpn.eastus.cloudapp.azure.com/provision.php'
-
-time.sleep(10)
 
 while(1):
 

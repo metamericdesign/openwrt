@@ -20,11 +20,11 @@ gitClonesCompletePathexists = os.path.exists(gitClonesCompletePath)
 path_to_orgDetails = '/root/systemStateFlags/orgDetails.txt'
 orgDetailsPath = Path(path_to_orgDetails)
 
+time.sleep(15)
+
 syslog.syslog(f'Github worker has started')
 syslog.syslog(f'Checking for provisionComplete')
 syslog.syslog(f' provisionCompletePathexists = {provisionCompletePathexists}')
-
-time.sleep(15)
 
 while(1):
 
@@ -33,6 +33,7 @@ while(1):
     #git clone required paths and https calls
     f = open(orgDetailsPath, "r")
     gitHttpsKey = json.loads(f.read())["gh_key"]
+    f.close()
 
     gitlightingpath="/root"
     gitlighting=f'https://{gitHttpsKey}@github.com/metamericdesign/gsSystems_Lighting.git'
