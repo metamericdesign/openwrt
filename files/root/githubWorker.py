@@ -14,14 +14,16 @@ gitClonesComplete = f'{path_to_systemFlags}/gitClonesComplete.txt'
 path_to_gsSystems_Lighting = '/root/gsSystems_Lighting'
 path_to_BaseStationPHP = '/srv/www/BaseStationPHP'
 
+syslog.syslog(f'Github worker has started')
+
 #makes file paths into booleans
 provisionCompletePathExists = os.path.exists(path_to_provisionComplete)
 gitClonesCompletePathexists = os.path.exists(path_to_gitClonesComplete)
 
-time.sleep(45)
+time.sleep(5)
 
 while(1):
-
+    syslog.syslog(f' Github loop start.')
     orgDetails_pathexists = os.path.exists(path_to_orgDetails)
 
     #get git https key from org details
@@ -42,20 +44,16 @@ while(1):
     gitRepos = [gitlightingRepo, gitphpRepo] #clone commads for thr repos
     gitRepoNames =["lightingWorker","basestationPhp"] #names to use in print statement
 
-    provisionCompletePathExists = os.path.exists(path_to_provisionComplete)
-    gitClonesCompletePathexists = os.path.exists(path_to_gitClonesComplete)
-
-    syslog.syslog(f'Github worker has started')
-    syslog.syslog(f'Checking for provisionComplete')
+    provisionCompletePathExists = os.path.exists(path_to_provisionComplete)   
     syslog.syslog(f'provisionCompletePathExists = {provisionCompletePathExists}')
 
-    #Step 1 Cloning ,while loop checks to make sure file resize has occured and clones havent been aquired yet
-    if(provisionCompletePathExists and not gitClonesCompletePathexists):
+    #Step 1 Cloning ,while loop checks to make sure file resize has occured
+    if(provisionCompletePathExists): 
 
         #makes file paths into booleans
         gsLightingPathexists = os.path.exists(path_to_gsSystems_Lighting)
         baseStationPhpPathexists = os.path.exists(path_to_BaseStationPHP)
-        gitClonesCompletePathexists = os.path.exists(path_to_gitClonesComplete)
+      
 
         #creating a list to use in the for each loop
         gitExists =[gsLightingPathexists,baseStationPhpPathexists]# boolean list
@@ -64,26 +62,19 @@ while(1):
         for (repoClone,gitExists,workerName) in zip(gitRepos,gitExists,gitRepoNames):
 
             if not gitExists :
-                syslog.syslog(f'{gitExists} not present, attempting to clone')
+                syslog.syslog(f'    Git {workerName} not present, attempting to clone')
                 os.system(f'{repoClone}')
             
             if gitExists :
-                syslog.syslog(f'{workerName} Clone acquired')
+                syslog.syslog(f'    Git {workerName} exists')
         
-        #if all Repos have been cloned creates a flag stating that and exists to git pull section
-        if gsLightingPathexists and baseStationPhpPathexists:
-            syslog.syslog('all Clones aquired')
-
-            f = open(gitClonesComplete, "w")
-            f.write("git Clones Complete")
-            f.close()
-            hibernationTime = 300
+      
+       
     else :
-        syslog.syslog(f'file size is not resized, waiting for reboot')
+        syslog.syslog(f'  file system size is not resized.')
 
     #step 2 Pulling, while loop for pulling the newest versions of git repos
-    if(gitClonesCompletePathexists):
-        syslog.syslog(f'this is a test, clone complete now waiting')
+    
 
-    syslog.syslog(f'githubWorker waiting for something to do')
+    syslog.syslog(f' githubWorker loop end, hibernate for {hibernationTime}')
     time.sleep(hibernationTime)
