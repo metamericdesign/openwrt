@@ -18,7 +18,7 @@ path_to_BaseStationPHP = '/srv/www/BaseStationPHP'
 provisionCompletePathExists = os.path.exists(path_to_provisionComplete)
 gitClonesCompletePathexists = os.path.exists(path_to_gitClonesComplete)
 
-time.sleep(15)
+time.sleep(45)
 
 while(1):
 
@@ -32,11 +32,11 @@ while(1):
     #setting up the git clone calls
     gitlightingpath="/root"
     gitlighting=f'https://{gitHttpsKey}@github.com/metamericdesign/gsSystems_Lighting.git'
-    gitphpRepo = f'git -C {gitphppath} clone {gitphp}'
-
+    gitlightingRepo =f'git -C {gitlightingpath} clone {gitlighting}'
+    
     gitphppath="/srv/www" 
     gitphp=f'https://{gitHttpsKey}@github.com/metamericdesign/BaseStationPHP.git'
-    gitlightingRepo =f'git -C {gitlightingpath} clone {gitlighting}'
+    gitphpRepo = f'git -C {gitphppath} clone {gitphp}'
 
     #creating a list to use in the for each loop
     gitRepos = [gitlightingRepo, gitphpRepo] #clone commads for thr repos
