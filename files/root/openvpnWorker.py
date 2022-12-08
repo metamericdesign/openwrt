@@ -1,4 +1,3 @@
-from pathlib import Path
 import time 
 import os
 import syslog 
@@ -6,38 +5,32 @@ import json
 from urllib import request
 from urllib.error import HTTPError
 
-#all files path needed for checking
-path_to_provisionComplete = '/root/systemStateFlags/provisionComplete.txt'
+hibernationTime = 15
 
+#all files path needed for checking
+path_to_systemFlags = '/root/systemStateFlags'
+path_to_provisionComplete = f'{path_to_systemFlags}/provisionComplete.txt'
+path_to_orgDetails = f'{path_to_systemFlags}/orgDetails.txt'
 path_to_openvpnConfig = '/etc/config/openvpn'
 
-
-path_to_orgDetails = '/root/systemStateFlags/orgDetails.txt'
-orgDetailsPath = Path(path_to_orgDetails)
-
-path_to_openvpn = '/dummypath' #dummy path 
+path_to_openvpn = '/dummypath' #dummy path to test as false for first pass through
 
 #makes file paths into booleans
-provisionCompletePath = Path(path_to_provisionComplete)
-provisionCompletePathexists = os.path.exists(provisionCompletePath)
 
 time.sleep(15)
 
-syslog.syslog(f'Github worker has started')
-syslog.syslog(f'Checking for provisionComplete')
-syslog.syslog(f' provisionCompletePathexists = {provisionCompletePathexists}')
-
-
-
 while(1):
 
-    provisionCompletePathexists = os.path.exists(provisionCompletePath)
-    openvpnPath = Path(path_to_openvpn)
-    openvpnPathexists = os.path.exists(openvpnPath)
+    provisionCompletePathexists = os.path.exists(path_to_provisionComplete)
+    openvpnPathexists = os.path.exists(path_to_openvpn)
+
+    syslog.syslog(f'Github worker has started')
+    syslog.syslog(f'Checking for provisionComplete')
+    syslog.syslog(f'provisionCompletePathexists = {provisionCompletePathexists}')
 
     if (provisionCompletePathexists and not openvpnPathexists):
 
-        f = open(orgDetailsPath, "r")
+        f = open(path_to_orgDetails, "r")
         orgDetails = json.loads(f.read())
         f.close()
 
@@ -81,9 +74,11 @@ while(1):
 
                 os.system('/etc/init.d/openvpn restart')
 
+                hibernationTime = 1800
+
          #if problem occurs or device not allowed errors out
         except HTTPError as err:
             syslog.syslog(f"Erroneous response: {err} - no connection to provisioning url")
             print(f"Erroneous response: {err} - no connection to provisioning url")
 
-    time.sleep(120)
+    time.sleep(hibernationTime)
