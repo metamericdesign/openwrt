@@ -7,26 +7,22 @@ from urllib import request
 from urllib.error import HTTPError
 
 #all files path needed for checking
-path_to_provisionComplete = '/root/systemStateFlags/provisionComplete.txt'
-
+path_to_systemFlags = '/root/systemStateFlags'
+path_to_provisionComplete = f'{path_to_systemFlags}/provisionComplete.txt'
+path_to_orgDetails = f'{path_to_systemFlags}/orgDetails.txt'
 path_to_openvpnConfig = '/etc/config/openvpn'
-
-
-path_to_orgDetails = '/root/systemStateFlags/orgDetails.txt'
-orgDetailsPath = Path(path_to_orgDetails)
 
 path_to_openvpn = '/dummypath' #dummy path 
 
 #makes file paths into booleans
-provisionCompletePath = Path(path_to_provisionComplete)
-provisionCompletePathexists = os.path.exists(provisionCompletePath)
 syslog.syslog('VPN worker has started, waiting 15 seconds.')
-time.sleep(5)
+time.sleep(15)
+
 while(1):
     try:
         while(1):
             syslog.syslog(' VPN Loop Start')
-            provisionCompletePathexists = os.path.exists(provisionCompletePath)
+            provisionCompletePathexists = os.path.exists(path_to_provisionComplete)
             openvpnPath = Path(path_to_openvpn)
             openvpnPathexists = os.path.exists(openvpnPath)
             syslog.syslog(f'    provisionCompletePathexists = {provisionCompletePathexists}')
@@ -34,7 +30,7 @@ while(1):
             if (provisionCompletePathexists and not openvpnPathexists):
                 syslog.syslog('  VPN Download Required.')
                 try:
-                    f = open(orgDetailsPath, "r")
+                    f = open(path_to_orgDetails, "r")
                     orgFileContents = f.read()
                     f.close()
                     syslog.syslog('   JSON file read.')

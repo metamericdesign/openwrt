@@ -3,6 +3,10 @@ import os
 import syslog  
 import json
 
+
+syslog.syslog(f'Github worker will start in 15 seconds')
+time.sleep(15)
+
 hibernationTime = 15
 
 #all files path needed for checking
@@ -14,13 +18,9 @@ gitClonesComplete = f'{path_to_systemFlags}/gitClonesComplete.txt'
 path_to_gsSystems_Lighting = '/root/gsSystems_Lighting'
 path_to_BaseStationPHP = '/srv/www/BaseStationPHP'
 
-syslog.syslog(f'Github worker has started')
-
 #makes file paths into booleans
 provisionCompletePathExists = os.path.exists(path_to_provisionComplete)
 gitClonesCompletePathexists = os.path.exists(path_to_gitClonesComplete)
-
-time.sleep(5)
 
 while(1):
     syslog.syslog(f' Github loop start.')
