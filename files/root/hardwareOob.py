@@ -66,7 +66,7 @@ while(1):
                 newFilesize = subprocess.check_output("df | grep overlayfs:/overlay |  awk '{ print $4 }'", shell=True)
 
                 #checks if filesize is greater then 2 GB, if not factory resets
-                if newFilesize > oldFilesize:
+                if int(newFilesize) > int(oldFilesize):
                     syslog.syslog(f'New file size is correct -> {newFilesize}')
 
                     #the reason 2 files get made here is in case another prccess gets added it can look for the fileResizeComplete.txt and the hardwareOobComplete.txt would get moved to the end
