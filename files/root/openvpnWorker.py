@@ -88,6 +88,7 @@ while(1):
                     print(f"Erroneous response: {err} - no connection to provisioning url")
             else:
                 syslog.syslog('  VPN already setup.')
+                time.sleep(120)
             
             
             syslog.syslog(' Loop End, sleeping 2 mins.')    
