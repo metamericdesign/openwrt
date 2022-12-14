@@ -15,8 +15,8 @@ path_to_openvpnConfig = '/etc/config/openvpn'
 path_to_openvpn = '/dummypath' #dummy path 
 
 #makes file paths into booleans
-syslog.syslog('VPN worker has started, waiting 15 seconds.')
-time.sleep(15)
+syslog.syslog('VPN worker has started, waiting 120 seconds.')
+time.sleep(120)
 
 while(1):
     try:
@@ -96,6 +96,6 @@ while(1):
     except:
         syslog.syslog(syslog.LOG_ERR,'Loop crash! Sleeping 2 mins.')
     syslog.syslog('Loop exit. Sleeping 2 mins.')
-    time.sleep(20)    
+    time.sleep(120)    
 
 syslog.syslog(syslog.LOG_ERR,'VPN Worker END.')
