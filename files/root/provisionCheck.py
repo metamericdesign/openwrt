@@ -16,7 +16,7 @@ path_to_hardwareOobComplete = f'{path_to_systemFlags}/hardwareOobComplete.txt'
 path_to_provisionComplete = f'{path_to_systemFlags}/provisionComplete.txt'
 path_to_orgDetails = f'{path_to_systemFlags}/orgDetails.txt'
 
-prov_url = 'http://gsvpn.eastus.cloudapp.azure.com/provision.php'
+prov_url = 'http://gsadminserver.eastus.cloudapp.azure.com:8080/provision.php'
 
 while(1):
         syslog.syslog(" Provisioning loop start.")
