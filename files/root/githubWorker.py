@@ -3,7 +3,6 @@ import os
 import syslog  
 import json
 
-
 syslog.syslog(f'Github worker will start in 30 seconds')
 time.sleep(30)
 
@@ -30,9 +29,16 @@ while(1):
             orgDetails_pathexists = os.path.exists(path_to_orgDetails)
 
             #get git https key from org details
-            f = open(path_to_orgDetails, "r")
-            gitHttpsKey = json.loads(f.read())["gh_key"]
-            f.close()
+            try:
+                syslog.syslog('Checking Org Details for gh_key')
+                f = open(path_to_orgDetails, "r")
+                gitHttpsKey = json.loads(f.read())["gh_key"]
+                f.close()
+                syslog.syslog('gh_key exists')
+            except Exception as err:
+                syslog.syslog("Github Worker Org Details Crash!")
+                syslog.syslog(f"ERROR -> {err}")
+                time.sleep(20)
 
             #setting up the git clone calls
             gitlightingpath="/root"

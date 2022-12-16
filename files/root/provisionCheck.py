@@ -125,28 +125,35 @@ while(1):
                     time.sleep(hibernationTime)
 
                 else :
-                    #Step 5, next run through after a succesful run to check the changes are still up to date
-                    hibernationTime = 15
-                    ipv4_lan = subprocess.check_output("ifstatus lan |  jsonfilter -e '@[\"ipv4-address\"][0].address'", shell=True).decode().strip()#binary->str->get rid of \n
+                    try:
+                        syslog.syslog("Org Details already exists")
+                        #Step 5, next run through after a succesful run to check the changes are still up to date
+                        hibernationTime = 15
+                        ipv4_lan = subprocess.check_output("ifstatus lan |  jsonfilter -e '@[\"ipv4-address\"][0].address'", shell=True).decode().strip()#binary->str->get rid of \n
 
-                    f = open(path_to_orgDetails, "r")
-                    base_num = json.loads(f.read())["base_num"]
-                    f.close()
+                        f = open(path_to_orgDetails, "r")
+                        base_num = json.loads(f.read())["base_num"]
+                        f.close()
 
-                    ipv4_lan_org_details = f"172.16.{base_num}.1"
-                    syslog.syslog(f"ipv4_lan = {ipv4_lan}")
-                    syslog.syslog(f"ipv4_lan_org_details = {ipv4_lan_org_details}")
+                        syslog.syslog("Checking if IP is correct")
+                        ipv4_lan_org_details = f"172.16.{base_num}.1"
+                        syslog.syslog(f"ipv4_lan = {ipv4_lan}")
+                        syslog.syslog(f"ipv4_lan_org_details = {ipv4_lan_org_details}")
 
-                    if ipv4_lan == ipv4_lan_org_details:#if succeeds everything is working, sleep
-                        hibernationTime = 1800
-                        syslog.syslog(f" Device already provisioned. Waiting {hibernationTime} seconds to test again.")
-                        time.sleep(hibernationTime)
+                        if ipv4_lan == ipv4_lan_org_details:#if succeeds everything is working, sleep
+                            hibernationTime = 1800
+                            syslog.syslog(f" Device already provisioned. Waiting {hibernationTime} seconds to test again.")
+                            time.sleep(hibernationTime)
 
-                    else: #if fail, delete flags and start over
-                        syslog.syslog(f"Org details exists but ipv4 is incorrect,deleting Org details and tring again in {hibernationTime}")
-                        os.system(f'rm {path_to_orgDetails}')
-                        os.system(f'rm {path_to_provisionComplete}')
-                        time.sleep(hibernationTime)
+                        else: #if fail, delete flags and start over
+                            syslog.syslog(f"Org details exists but ipv4 is incorrect,deleting Org details and tring again in {hibernationTime}")
+                            os.system(f'rm {path_to_orgDetails}')
+                            os.system(f'rm {path_to_provisionComplete}')
+                            time.sleep(hibernationTime)
+                    except Exception as err:
+                        syslog.syslog("Provisioning Service Crash In step 5!")
+                        syslog.syslog(f"ERROR -> {err}")
+                        time.sleep(20)
             
             else:
                 syslog.syslog(" Waiting on file system resize.")

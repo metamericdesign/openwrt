@@ -1,4 +1,3 @@
-from pathlib import Path
 import time 
 import os
 import syslog 
@@ -14,17 +13,16 @@ path_to_openvpnConfig = '/etc/config/openvpn'
 
 path_to_openvpn = '/dummypath' #dummy path 
 
-#makes file paths into booleans
-syslog.syslog('VPN worker has started, waiting 120 seconds.')
+syslog.syslog('VPN worker starts in 120 seconds.')
 time.sleep(120)
 
 while(1):
     try:
         while(1):
             syslog.syslog(' VPN Loop Start')
+            #makes file paths into booleans
             provisionCompletePathexists = os.path.exists(path_to_provisionComplete)
-            openvpnPath = Path(path_to_openvpn)
-            openvpnPathexists = os.path.exists(openvpnPath)
+            openvpnPathexists = os.path.exists(path_to_openvpn)
             syslog.syslog(f'    provisionCompletePathexists = {provisionCompletePathexists}')
             syslog.syslog(f'    openvpnPathexists = {openvpnPathexists}')
             if (provisionCompletePathexists and not openvpnPathexists):
@@ -88,14 +86,14 @@ while(1):
                     print(f"Erroneous response: {err} - no connection to provisioning url")
             else:
                 syslog.syslog('  VPN already setup.')
-                time.sleep(120)
+                time.sleep(1800)
             
             
-            syslog.syslog(' Loop End, sleeping 2 mins.')    
-            time.sleep(120)
+            syslog.syslog(' Loop End, sleeping 30 mins.')    
+            time.sleep(1800)
     except:
-        syslog.syslog(syslog.LOG_ERR,'Loop crash! Sleeping 2 mins.')
+        syslog.syslog(syslog.LOG_ERR,'Loop crash! Sleeping 30 mins.')
     syslog.syslog('Loop exit. Sleeping 2 mins.')
-    time.sleep(120)    
+    time.sleep(1800)    
 
 syslog.syslog(syslog.LOG_ERR,'VPN Worker END.')
