@@ -98,6 +98,7 @@ while(1):
                                         syslog.syslog(f"base_num has a value {base_num}")
                                         os.system(f'uci set network.lan.ipaddr="172.16.{base_num}.1"')
                                         os.system('uci commit network')
+                                        syslog.syslog(f"restarting network, this will take around 10 seconds")
                                         os.system('/etc/init.d/network restart')
                                         time.sleep(10) # needed for network restart to finish
                                         
