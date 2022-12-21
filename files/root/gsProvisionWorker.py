@@ -83,7 +83,7 @@ while(1):
                                 if base_num !="": #Step 4, changes IP address to match base num
                                     # gets current IP adress
                                     ipv4_lan = subprocess.check_output("ifstatus lan |  jsonfilter -e '@[\"ipv4-address\"][0].address'", shell=True).decode().strip()#binary->str->get rid of \n
-                                    syslog.syslog(f"New ipv4 lan address = {ipv4_lan}")
+                                    syslog.syslog(f"Current ipv4 lan address = {ipv4_lan}")
 
                                     #creates what the theoretical ip address should be
                                     ipv4_lan_org_details = f"172.16.{base_num}.1"
