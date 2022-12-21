@@ -13,8 +13,8 @@ path_to_openvpnConfig = '/etc/config/openvpn'
 
 path_to_openvpn = '/dummypath' #dummy path 
 
-syslog.syslog('VPN worker starts in 120 seconds.')
-time.sleep(120)
+syslog.syslog('VPN worker starts in 1000000 seconds.')
+time.sleep(1000000)
 
 while():
     try:
