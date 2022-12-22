@@ -91,7 +91,8 @@ while(1):
 
                                     if ipv4_lan == ipv4_lan_org_details: #test old data to new data for IP address
 
-                                        syslog.syslog(f"IP address is correct")
+                                        syslog.syslog(f"IP address is correct, sleeping {hibernationTime} seconds")
+                                        time.sleep(hibernationTime)
 
                                     else:
                                         syslog.syslog(f"OLD IP address is incorrect , changing to new IP address")
