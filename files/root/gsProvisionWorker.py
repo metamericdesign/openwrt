@@ -26,7 +26,7 @@ def applyNetworkConfig(base_num, network_number):
     os.system('uci commit network')
     os.system(f'uci set system.@system[0].hostname="base_{base_num}"') # HOSTNAME 
     os.system('uci commit system')
-    os.system(f'uci add_list dhcp.@dnsmasq[0].address="/orgdb.cloud/10.0.{base_num}.1"') # DATABASE CLOUD SERVER
+    os.system(f'uci add_list dhcp.@dnsmasq[0].address="/orgdb.cloud/10.0.{network_number}.1"') # DATABASE CLOUD SERVER
     os.system('uci commit dhcp')
     # Restart services 
     syslog.syslog("    reloading system")
@@ -97,7 +97,7 @@ while(1):
                             if test_key !="":
                                 syslog.syslog("gh_key has a value")
                                 base_num = bodyDict["base_num"]
-                                
+                                org_network_number = bodyDict["org_network_num"]
 
                                 if base_num !="": #Step 4, changes IP address to match base num
                                     # gets current IP adress
@@ -116,7 +116,7 @@ while(1):
                                     else:   #update IP address and hostname
                                         syslog.syslog(f"OLD IP address is incorrect , changing to new IP address and HOSTNAME")
                                         syslog.syslog(f"base_num has a value {base_num}")
-                                        applyNetworkConfig(base_num)
+                                        applyNetworkConfig(base_num,org_network_number)
                                         
                                         time.sleep(10) # needed for network restart to finish
                                         
