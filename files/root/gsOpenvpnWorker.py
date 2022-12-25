@@ -14,11 +14,11 @@ path_to_openvpnConfig = '/etc/config/openvpn'
 path_to_openvpn = '/dummypath' #dummy path 
 
 syslog.syslog('VPN worker starts in 1000000 seconds.')
-time.sleep(1000000)
+time.sleep(10)
 
-while():
+while(1):
     try:
-        while(1 == 2):
+        while(1):
             syslog.syslog(' VPN Loop Start')
             #makes file paths into booleans
             provisionCompletePathexists = os.path.exists(path_to_provisionComplete)
@@ -38,27 +38,30 @@ while():
                     except:
                         syslog.syslog(syslog.LOG_ERR,'JSON file error!')
                         break
-                    syslog.syslog('   JSON loaded.')
+                    syslog.syslog('   JSON file loaded.')                    
                     openvpnUrl = orgDetails["ovpn_url"]
                     base_num=orgDetails["base_num"]
                     basestationName = f'base_{base_num}'
                     path_to_openvpn = f'/etc/openvpn/{basestationName}.ovpn'
+                    syslog.syslog('    Loading Unique ID...')
                     with open('/root/systemStateFlags/uniqueID.txt', mode='r') as file:
                             base_unique_id = file.read()
-                    syslog.syslog('Org details loaded.')
+                    syslog.syslog('    Org details, Unique ID loaded.')
                     #checks provisioning url to see if the device is allowed
                     data_dict={"base_unique_id" : base_unique_id}
                     json_data_encoded = json.dumps(data_dict).encode('utf-8')        
-                except err:
-                    syslog.syslog(syslog.LOG_ERR,'JSON load error!')
+                except:
+                    syslog.syslog(syslog.LOG_ERR,'Org Detail assignment load error!')
                     break
                 try:
                     # if allowed will get Org details and store to a file
-                    syslog.syslog('   Trying to download')
+                    syslog.syslog(openvpnUrl)
                     req = request.Request(url=openvpnUrl)
-                    req.add_header('Content-Type', 'application/json; charset=utf-8')
-                    req.add_header('Content-Length', len(json_data_encoded))
+                   # req.add_header('Content-Type', 'application/json; charset=utf-8')
+                   # req.add_header('Content-Length', len(json_data_encoded))
+                    syslog.syslog('   Trying to download')
                     response = request.urlopen(req, json_data_encoded)
+                    syslog.syslog('   response received.')
                     if response.getcode() == 200:
                         body = response.read().decode("utf-8")
                         print(body)
@@ -81,9 +84,9 @@ while():
                         syslog.syslog(syslog.LOG_ERR,'Download Failed.')
                         
                 #if problem occurs or device not allowed errors out
-                except HTTPError as err:
-                    syslog.syslog(f"Erroneous response: {err} - no connection to provisioning url")
-                    print(f"Erroneous response: {err} - no connection to provisioning url")
+                except:
+                    syslog.syslog(f"Erroneous response: - no connection to provisioning url")
+                    print(f"Erroneous response: - no connection to provisioning url")
             else:
                 syslog.syslog('  VPN already setup.')
                 time.sleep(1800)

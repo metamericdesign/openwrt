@@ -20,6 +20,24 @@ path_to_orgDetails = f'{path_to_systemFlags}/orgDetails.txt'
 
 prov_url = 'http://gsadminserver.eastus.cloudapp.azure.com:8080/provision.php'
 
+def applyNetworkConfig(base_num, network_number):
+    syslog.syslog('    Applying Network Number.')
+    os.system(f'uci set network.lan.ipaddr="172.16.{base_num}.1"') # IP Address
+    os.system('uci commit network')
+    os.system(f'uci set system.@system[0].hostname="base_{base_num}"') # HOSTNAME 
+    os.system('uci commit system')
+    os.system(f'uci add_list dhcp.@dnsmasq[0].address="/orgdb.cloud/10.0.{base_num}.1"') # DATABASE CLOUD SERVER
+    os.system('uci commit dhcp')
+    # Restart services 
+    syslog.syslog("    reloading system")
+    os.system('/etc/init.d/system reload')
+    syslog.syslog("    restarting dnsmasq")
+    os.system('/etc/init.d/dnsmasq restart') 
+    syslog.syslog("    restarting network, takes 10 seconds")
+    os.system('/etc/init.d/network restart')
+    
+
+
 while(1):
         syslog.syslog(" Provisioning loop start.")
         try:
@@ -47,7 +65,7 @@ while(1):
 
                     #step 1 , if allowed will get Org details and store to a file
                     syslog.syslog("Doing a request.urlopen to get json object")
-                    response = request.urlopen(req, json_data_encoded)
+                    response = request.urlopen(req, json_data_encoded) # MW - this can throw an exception that is not an HTTPError
                     if response.getcode() == 200:
                         syslog.syslog("Code 200 recieved, checking if data is valid")
                         body = response.read().decode("utf-8")
@@ -79,6 +97,7 @@ while(1):
                             if test_key !="":
                                 syslog.syslog("gh_key has a value")
                                 base_num = bodyDict["base_num"]
+                                
 
                                 if base_num !="": #Step 4, changes IP address to match base num
                                     # gets current IP adress
@@ -97,14 +116,7 @@ while(1):
                                     else:   #update IP address and hostname
                                         syslog.syslog(f"OLD IP address is incorrect , changing to new IP address and HOSTNAME")
                                         syslog.syslog(f"base_num has a value {base_num}")
-                                        os.system(f'uci set network.lan.ipaddr="172.16.{base_num}.1"')
-                                        os.system('uci commit network')
-                                        os.system(f'uci set system.@system[0].hostname="base_{base_num}"')
-                                        os.system('uci commit system')                                        
-                                        syslog.syslog(f"reloading system")
-                                        os.system('/etc/init.d/system reload')
-                                        syslog.syslog(f"restarting network, this will take around 10 seconds")
-                                        os.system('/etc/init.d/network restart')
+                                        applyNetworkConfig(base_num)
                                         
                                         time.sleep(10) # needed for network restart to finish
                                         
