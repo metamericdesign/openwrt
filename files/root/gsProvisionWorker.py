@@ -63,7 +63,7 @@ while(1):
 
                             if error_verbosity_level == 1:
                                 try:
-                                    message =bodyDict["message"]
+                                    message = bodyDict["message"]
                                     syslog.syslog(message)
                                     syslog.syslog("trying again in 10 seconds")
                                     time.sleep(10)
@@ -94,13 +94,18 @@ while(1):
                                         syslog.syslog(f"IP address is correct, sleeping {hibernationTime} seconds")
                                         time.sleep(hibernationTime)
 
-                                    else:
-                                        syslog.syslog(f"OLD IP address is incorrect , changing to new IP address")
+                                    else:   #update IP address and hostname
+                                        syslog.syslog(f"OLD IP address is incorrect , changing to new IP address and HOSTNAME")
                                         syslog.syslog(f"base_num has a value {base_num}")
                                         os.system(f'uci set network.lan.ipaddr="172.16.{base_num}.1"')
                                         os.system('uci commit network')
+                                        os.system(f'uci set system.@system[0].hostname="base_{base_num}"')
+                                        os.system('uci commit system')                                        
+                                        syslog.syslog(f"reloading system")
+                                        os.system('/etc/init.d/system reload')
                                         syslog.syslog(f"restarting network, this will take around 10 seconds")
                                         os.system('/etc/init.d/network restart')
+                                        
                                         time.sleep(10) # needed for network restart to finish
                                         
                                         #gets actual lan ip address after network restart
