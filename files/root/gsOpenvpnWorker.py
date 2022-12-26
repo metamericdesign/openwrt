@@ -31,18 +31,23 @@ while(1):
                     f = open(path_to_orgDetails, "r")
                     orgFileContents = f.read()
                     f.close()
-                    syslog.syslog('   JSON file read.')
+                    syslog.syslog('   JSON file read.1')
                     syslog.syslog(orgFileContents)
                     try:
                         orgDetails = json.loads(orgFileContents)
                     except:
                         syslog.syslog(syslog.LOG_ERR,'JSON file error!')
                         break
-                    syslog.syslog('   JSON file loaded.')                    
-                    openvpnUrl = orgDetails["ovpn_url"]
+                    syslog.syslog('   JSON file loaded.2') 
+                    base_name = orgDetails["base_name"]
+                    syslog.syslog(base_name)  
+                    cloud_host = orgDetails["cloud_host"]
+                    syslog.syslog(cloud_host)                    
+                    openvpnUrl = f'http://{cloud_host}:8754/{base_name}.ovpn'
+                    syslog.syslog(openvpnUrl)    
                     base_num=orgDetails["base_num"]
-                    basestationName = f'base_{base_num}'
-                    path_to_openvpn = f'/etc/openvpn/{basestationName}.ovpn'
+                    syslog.syslog(base_num) 
+                    path_to_openvpn = f'/etc/openvpn/{base_name}.ovpn'                    
                     syslog.syslog('    Loading Unique ID...')
                     with open('/root/systemStateFlags/uniqueID.txt', mode='r') as file:
                             base_unique_id = file.read()
@@ -74,8 +79,8 @@ while(1):
                         os.system('/etc/init.d/openvpn stop')
 
                         f = open(path_to_openvpnConfig, "w")
-                        f.write(f"config openvpn '{basestationName}'")
-                        f.write(f"\n\toption config '/etc/openvpn/{basestationName}.ovpn'")
+                        f.write(f"config openvpn '{base_name}'")
+                        f.write(f"\n\toption config '/etc/openvpn/{base_name}.ovpn'")
                         f.write(f"\n\toption enabled '1'")
                         f.close()
                         syslog.syslog('   Restarting openvpn.')
