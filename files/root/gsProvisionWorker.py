@@ -3,7 +3,7 @@ import os
 import syslog 
 import json
 from urllib import request
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 import subprocess
 
 #all file paths needed for checking
@@ -166,11 +166,13 @@ while(1):
                         syslog.syslog(f'Something went wrong -> {response.getcode()} code recieved')
 
                             #if problem occurs or device not allowed errors out
-                except HTTPError as err:
+
+                except (HTTPError, URLError, Exception) as err:
                     syslog.syslog(f"Erroneous response: {err} - no connection to provisioning url")
                     print(f"Erroneous response: {err} - no connection to provisioning url")
                 syslog.syslog(f" Sleep {hibernationTime} seconds.")
                 time.sleep(hibernationTime)
+        
             else:
                 syslog.syslog(" Waiting on file system resize.")
                 time.sleep(hibernationTime)
