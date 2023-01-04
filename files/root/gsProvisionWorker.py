@@ -5,6 +5,7 @@ import json
 from urllib import request
 from urllib.error import HTTPError, URLError
 import subprocess
+import gsDebugPrint
 
 #all file paths needed for checking
 syslog.syslog('Provisioning Service Started, waiting 10 seconds.')

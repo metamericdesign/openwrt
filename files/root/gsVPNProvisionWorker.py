@@ -1,8 +1,9 @@
 import os
 import syslog 
 import time
+import gsDebugPrint
 
-hibernationTime = 30;
+hibernationTime = 30
 
 path_to_requestroot = '/tmp/gsvpnrequests'
 path_to_basestation_requests = f'{path_to_requestroot}/basestation'

@@ -2,6 +2,7 @@ import time
 import os
 import syslog 
 import subprocess
+import gsDebugPrint
 
 syslog.syslog(f'HardwareOOb will start in 3 seconds')
 time.sleep(3)

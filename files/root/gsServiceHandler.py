@@ -1,10 +1,15 @@
 import time
-import os
 import syslog  
 import subprocess
+import gsDebugPrint
 
-syslog.syslog(f'Service Handler will start in 50 seconds')
-time.sleep(50)
+gsdb = gsDebugPrint.gsDebugPrint("gsServiceHandler")
+
+gsdb.setPrintToTerminal(True)
+gsdb.setPrintToSysLog(True)
+
+gsdb.gsDebugPrint(f'Service Handler will start in 50 seconds')
+time.sleep(5)
 
 path_to_services = '/etc/init.d/'
 path_to_proccesses = '/root/'
@@ -29,40 +34,39 @@ while(1):
     WorkersToStart=[]
     ServicesToStart=[]
 
-    print(f"gsWorkers to check = {gsWorkersToCheck}")
-    print(f"gsServices to check = {gsServicesToCheck}")
+    gsdb.gsDebugPrint(f"gsWorkers to check = {gsWorkersToCheck}")
+    gsdb.gsDebugPrint(f"gsServices to check = {gsServicesToCheck}")
     for (service,worker) in zip(gsServicesToCheck , gsWorkersToCheck):
         try:
             tempWorker= worker
             tempService= service
-            print(f'worker = {worker}')
+            gsdb.gsDebugPrint(f'worker = {worker}')
             tempString = worker
             stat = subprocess.check_output(f"ps | grep {worker} |  awk '{awkPrint}' | grep -v grep | grep -v /bin/sh ", shell=True).decode().strip()#binary->str->get rid of \n
             stat_list = (stat.split(" "))
 
-            print(stat_list)
-            print('-------------------------------------------------------')
+            gsdb.gsDebugPrint(stat)
+            gsdb.gsDebugPrint('-------------------------------------------------------')
 
         except Exception as err:
-            print(f"ERROR {err} .The proccess ( {tempWorker} ) you are checking does not exist.")
+            gsdb.gsDebugPrint(f"ERROR {err} .The proccess ( {tempWorker} ) you are checking does not exist.")
             WorkersToStart.append(tempWorker)
             ServicesToStart.append(tempService)
-            print('-------------------------------------------------------')
+            gsdb.gsDebugPrint('-------------------------------------------------------')
 
 
-    print(f"WorkersToStart = {WorkersToStart}")
-    print(f"ServicesToStart = {WorkersToStart}")
+    gsdb.gsDebugPrint(f"WorkersToStart = {WorkersToStart}")
+    gsdb.gsDebugPrint(f"ServicesToStart = {WorkersToStart}")
 
     for (runWorker,RunService) in zip(WorkersToStart,ServicesToStart):
         try:
-            completed_process = subprocess.run([f"/etc/init.d/{RunService}","start"])
-            print(f"Tried restarting {RunService}")
-            print(completed_process)
-            print('=======================================================')
+            completed_process = subprocess.CompletedProcess (subprocess.run([f"/etc/init.d/{RunService}","start"]),"-1")  
+            gsdb.gsDebugPrint(f"Tried restarting {RunService} Code: {completed_process.returncode}")
+            gsdb.gsDebugPrint('=======================================================')
 
         except Exception as err:
-            print(f"ERROR {err}.")
-            print(f"Failed to restart {RunService}")
+            gsdb.gsDebugPrint(f"ERROR {err}." , 4)
+            gsdb.gsDebugPrint(f"Failed to restart {RunService}")
     
     time.sleep(15)
 

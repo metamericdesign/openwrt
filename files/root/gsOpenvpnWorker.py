@@ -4,6 +4,7 @@ import syslog
 import json
 from urllib import request
 from urllib.error import HTTPError
+import gsDebugPrint
 
 #all files path needed for checking
 path_to_systemFlags = '/root/systemStateFlags'

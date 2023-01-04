@@ -2,6 +2,7 @@ import time
 import os
 import syslog  
 import json
+import gsDebugPrint
 
 #
 # Get repo list from provisioning, list from data base
