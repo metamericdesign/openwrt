@@ -7,8 +7,13 @@ from urllib.error import HTTPError, URLError
 import subprocess
 import gsDebugPrint
 
+gsdb = gsDebugPrint.gsDebugPrint("gsProvisionWorker")
+
+gsdb.setPrintToTerminal(False)
+gsdb.setPrintToSysLog(True)
+
 #all file paths needed for checking
-syslog.syslog('Provisioning Service Started, waiting 10 seconds.')
+gsdb.gsDebugPrint('Provisioning Service Started, waiting 10 seconds.',1)
 time.sleep(10)
 hibernationTime = 15
 
@@ -22,7 +27,7 @@ path_to_orgDetails = f'{path_to_systemFlags}/orgDetails.txt'
 prov_url = 'http://gsadminserver.eastus.cloudapp.azure.com:8080/provision.php'
 
 def applyNetworkConfig(base_num, network_number):
-    syslog.syslog('    Applying Network Number.')
+    gsdb.gsDebugPrint('    Applying Network Number.')
     os.system(f'uci set network.lan.ipaddr="172.16.{base_num}.1"') # IP Address
     os.system('uci commit network')
     os.system(f'uci set system.@system[0].hostname="base_{base_num}"') # HOSTNAME 
@@ -30,26 +35,26 @@ def applyNetworkConfig(base_num, network_number):
     os.system(f'uci add_list dhcp.@dnsmasq[0].address="/orgdb.cloud/10.0.{network_number}.1"') # DATABASE CLOUD SERVER
     os.system('uci commit dhcp')
     # Restart services 
-    syslog.syslog("    reloading system")
+    gsdb.gsDebugPrint("    reloading system")
     os.system('/etc/init.d/system reload')
-    syslog.syslog("    restarting dnsmasq")
+    gsdb.gsDebugPrint("    restarting dnsmasq")
     os.system('/etc/init.d/dnsmasq restart') 
-    syslog.syslog("    restarting network, takes 10 seconds")
+    gsdb.gsDebugPrint("    restarting network, takes 10 seconds")
     os.system('/etc/init.d/network restart')
     
 
 
 while(1):
-        syslog.syslog(" Provisioning loop start.")
+        gsdb.gsDebugPrint(" Provisioning loop start.",1)
         try:
             hardwareOobCompletePathexists = os.path.exists(path_to_hardwareOobComplete)
-            syslog.syslog(f' hardwareOobCompletePathexists = {hardwareOobCompletePathexists}')
+            gsdb.gsDebugPrint(f' hardwareOobCompletePathexists = {hardwareOobCompletePathexists}')
             OrgDetailsPathExists = os.path.exists(path_to_orgDetails)
             #only starts if file resize has occured
 
             if hardwareOobCompletePathexists:
 
-                syslog.syslog(" Starting Provisioning process")
+                gsdb.gsDebugPrint(" Starting Provisioning process")
 
                 #gets the unique ID stored on the device
                 with open('/root/systemStateFlags/uniqueID.txt', mode='r') as file:
@@ -65,74 +70,74 @@ while(1):
                     req.add_header('Content-Length', len(json_data_encoded))
 
                     #step 1 , if allowed will get Org details and store to a file
-                    syslog.syslog("Doing a request.urlopen to get json object")
+                    gsdb.gsDebugPrint("Doing a request.urlopen to get json object")
                     response = request.urlopen(req, json_data_encoded) # MW - this can throw an exception that is not an HTTPError
                     if response.getcode() == 200:
-                        syslog.syslog("Code 200 recieved, checking if data is valid")
+                        gsdb.gsDebugPrint("Code 200 recieved, checking if data is valid")
                         body = response.read().decode("utf-8")
                         
-                        syslog.syslog(f"json Object data = {body}")
+                        gsdb.gsDebugPrint(f"json Object data = {body}")
 
                         if body == "": #step 2 , error checking to see if file is blank
-                            syslog.syslog("Something went wrong! the json object was blank, trying again")
+                            gsdb.gsDebugPrint("Something went wrong! the json object was blank, trying again",2)
 
                         else:
                             bodyDict = json.loads(body)
-                            syslog.syslog("Json object has data! checking if data is accurate")
+                            gsdb.gsDebugPrint("Json object has data! checking if data is accurate")
 
                             if error_verbosity_level == 1:
                                 try:
                                     message = bodyDict["message"]
-                                    syslog.syslog(message)
-                                    syslog.syslog("trying again in 10 seconds")
+                                    gsdb.gsDebugPrint(message)
+                                    gsdb.gsDebugPrint("trying again in 10 seconds")
                                     time.sleep(10)
                                     continue
                                 except KeyError: # not doing anything here if device is fully provisioned and error_verbosity_level is set
                                     pass
                             else:
-                                syslog.syslog("error_verbosity_level == 0 no message")
+                                gsdb.gsDebugPrint("error_verbosity_level == 0 no message")
 
                             test_key = bodyDict["gh_key"]
 
                             #step 3 ,tests the key pair values that should never be empty
                             if test_key !="":
-                                syslog.syslog("gh_key has a value")
+                                gsdb.gsDebugPrint("gh_key has a value")
                                 base_num = bodyDict["base_num"]
                                 org_network_number = bodyDict["org_network_num"]
 
                                 if base_num !="": #Step 4, changes IP address to match base num
                                     # gets current IP adress
                                     ipv4_lan = subprocess.check_output("ifstatus lan |  jsonfilter -e '@[\"ipv4-address\"][0].address'", shell=True).decode().strip()#binary->str->get rid of \n
-                                    syslog.syslog(f"Current ipv4 lan address = {ipv4_lan}")
+                                    gsdb.gsDebugPrint(f"Current ipv4 lan address = {ipv4_lan}")
 
                                     #creates what the theoretical ip address should be
                                     ipv4_lan_org_details = f"172.16.{base_num}.1"
-                                    syslog.syslog(f"ipv4_lan_org_details = {ipv4_lan_org_details}")
+                                    gsdb.gsDebugPrint(f"ipv4_lan_org_details = {ipv4_lan_org_details}")
 
                                     if ipv4_lan == ipv4_lan_org_details: #test old data to new data for IP address
 
-                                        syslog.syslog(f"IP address is correct, sleeping {hibernationTime} seconds")
+                                        gsdb.gsDebugPrint(f"IP address is correct, sleeping {hibernationTime} seconds",1)
                                         time.sleep(hibernationTime)
 
                                     else:   #update IP address and hostname
-                                        syslog.syslog(f"OLD IP address is incorrect , changing to new IP address and HOSTNAME")
-                                        syslog.syslog(f"base_num has a value {base_num}")
+                                        gsdb.gsDebugPrint(f"OLD IP address is incorrect , changing to new IP address and HOSTNAME")
+                                        gsdb.gsDebugPrint(f"base_num has a value {base_num}")
                                         applyNetworkConfig(base_num,org_network_number)
                                         
                                         time.sleep(10) # needed for network restart to finish
                                         
                                         #gets actual lan ip address after network restart
                                         ipv4_lan = subprocess.check_output("ifstatus lan |  jsonfilter -e '@[\"ipv4-address\"][0].address'", shell=True).decode().strip()#binary->str->get rid of \n
-                                        syslog.syslog(f"New ipv4 lan address = {ipv4_lan}")
+                                        gsdb.gsDebugPrint(f"New ipv4 lan address = {ipv4_lan}")
 
                                         #creates what the theoretical ip address should be
                                         ipv4_lan_org_details = f"172.16.{base_num}.1"
-                                        syslog.syslog(f"ipv4_lan_org_details = {ipv4_lan_org_details}")
+                                        gsdb.gsDebugPrint(f"ipv4_lan_org_details = {ipv4_lan_org_details}")
 
                                         if ipv4_lan == ipv4_lan_org_details: #test old data to new data for IP address
 
-                                            syslog.syslog(f"OLD IP address matches new IP address")
-                                            syslog.syslog("saving data to org details and flagging provioning as complete")
+                                            gsdb.gsDebugPrint(f"OLD IP address matches new IP address")
+                                            gsdb.gsDebugPrint("saving data to org details and flagging provioning as complete",1)
 
                                             #stores org deatils
                                             f = open(path_to_orgDetails, "w")
@@ -143,44 +148,43 @@ while(1):
                                             f = open(path_to_provisionComplete, "w")
                                             f.write("provision complete")
                                             f.close()
-                                            syslog.syslog(" Provisioning Success.")
+                                            gsdb.gsDebugPrint(" Provisioning Success.")
                                             hibernationTime = 1800
 
-                                            syslog.syslog(f" Device provisioning complete. Wait {hibernationTime} seconds.")
+                                            gsdb.gsDebugPrint(f" Device provisioning complete. Wait {hibernationTime} seconds.")
                                             time.sleep(hibernationTime)
 
                                         else: #org details was gotten but the IP address change failed
-                                            syslog.syslog(f"Org details exist but ipv4 is incorrect, attempting again in {hibernationTime}")
-                                            syslog.syslog(f"ipv4_lan = {ipv4_lan}")
-                                            syslog.syslog(f"ipv4_lan_org_details = {ipv4_lan_org_details}")
+                                            gsdb.gsDebugPrint(f"Org details exist but ipv4 is incorrect, attempting again in {hibernationTime}")
+                                            gsdb.gsDebugPrint(f"ipv4_lan = {ipv4_lan}")
+                                            gsdb.gsDebugPrint(f"ipv4_lan_org_details = {ipv4_lan_org_details}")
                                             time.sleep(hibernationTime)
 
                                 else: 
-                                        syslog.syslog(f"base_num is blank, bad data. Retrying in {hibernationTime}")
+                                        gsdb.gsDebugPrint(f"base_num is blank, bad data. Retrying in {hibernationTime}",2)
                                         time.sleep(hibernationTime)
 
                             else:
-                                    syslog.syslog(f"gh_key is Blank, bad data. Retrying in {hibernationTime}")
+                                    gsdb.gsDebugPrint(f"gh_key is Blank, bad data. Retrying in {hibernationTime}",2)
                                     time.sleep(hibernationTime)
 
                     else:
-                        syslog.syslog(f'Something went wrong -> {response.getcode()} code recieved')
+                        gsdb.gsDebugPrint(f'Something went wrong -> {response.getcode()} code recieved',3)
 
                             #if problem occurs or device not allowed errors out
 
                 except (HTTPError, URLError, Exception) as err:
-                    syslog.syslog(f"Erroneous response: {err} - no connection to provisioning url")
-                    print(f"Erroneous response: {err} - no connection to provisioning url")
-                syslog.syslog(f" Sleep {hibernationTime} seconds.")
+                    gsdb.gsDebugPrint(f"Erroneous response: {err} - no connection to provisioning url",3)
+                gsdb.gsDebugPrint(f" Sleep {hibernationTime} seconds.")
                 time.sleep(hibernationTime)
         
             else:
-                syslog.syslog(" Waiting on file system resize.")
+                gsdb.gsDebugPrint(" Waiting on file system resize.",1)
                 time.sleep(hibernationTime)
         except Exception as err:
-           syslog.syslog("Provisioning Service Crash!")
-           syslog.syslog(f"ERROR -> {err}")
+           gsdb.gsDebugPrint("Provisioning Service Crash!",3)
+           gsdb.gsDebugPrint(f"ERROR -> {err}",3)
            time.sleep(20)
 
-syslog.syslog(f" Provisioning loop END. Wait 10 seconds.")
+gsdb.gsDebugPrint(f" Provisioning loop END. Wait 10 seconds.")
 time.sleep(10)

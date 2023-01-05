@@ -4,11 +4,15 @@ import syslog
 import json
 import gsDebugPrint
 
+gsdb = gsDebugPrint.gsDebugPrint("gsGithubWorker")
+
+gsdb.setPrintToTerminal(False)
+gsdb.setPrintToSysLog(True)
 #
 # Get repo list from provisioning, list from data base
 #
 
-syslog.syslog(f'Github worker will start in 30 seconds')
+gsdb.gsDebugPrint(f'Github worker will start in 30 seconds',1)
 time.sleep(30)
 
 hibernationTime = 15
@@ -30,19 +34,19 @@ while(1):
     try:
         provisionCompletePathExists = os.path.exists(path_to_provisionComplete)
         if(provisionCompletePathExists):
-            syslog.syslog(f' Github loop start.')
+            gsdb.gsDebugPrint(f' Github loop start.',1)
             orgDetails_pathexists = os.path.exists(path_to_orgDetails)
 
             #get git https key from org details
             try:
-                syslog.syslog('Checking Org Details for gh_key')
+                gsdb.gsDebugPrint('Checking Org Details for gh_key')
                 f = open(path_to_orgDetails, "r")
                 gitHttpsKey = json.loads(f.read())["gh_key"]
                 f.close()
-                syslog.syslog('gh_key exists')
+                gsdb.gsDebugPrint('gh_key exists')
             except Exception as err:
-                syslog.syslog("Github Worker Org Details Crash!")
-                syslog.syslog(f"ERROR -> {err}")
+                gsdb.gsDebugPrint("Github Worker Org Details Crash!",3)
+                gsdb.gsDebugPrint(f"ERROR -> {err}",3)
                 time.sleep(20)
 
             #setting up the git clone calls
@@ -62,7 +66,7 @@ while(1):
             gitRepoNames =["lightingWorker","basestationPhp"] #names to use in print statement
 
             provisionCompletePathExists = os.path.exists(path_to_provisionComplete)   
-            syslog.syslog(f'provisionCompletePathExists = {provisionCompletePathExists}')
+            gsdb.gsDebugPrint(f'provisionCompletePathExists = {provisionCompletePathExists}')
 
             #Step 1 Cloning ,while loop checks to make sure file resize has occured
         
@@ -79,22 +83,22 @@ while(1):
             for (repoClone,gitExists,workerName,repoPull) in zip(gitRepos,gitExists,gitRepoNames,pullRepos):
 
                 if not gitExists :
-                    syslog.syslog(f'    Git {workerName} not present, attempting to clone')
+                    gsdb.gsDebugPrint(f'    Git {workerName} not present, attempting to clone')
                     os.system(f'{repoClone}')
                 
                 if gitExists :
-                    syslog.syslog(f'    Git {workerName} exists, attempting to pull newest version if one is available')
+                    gsdb.gsDebugPrint(f'    Git {workerName} exists, attempting to pull newest version if one is available')
                     os.system(f'{repoPull}')
                     hibernationTime = 300
             
         
         
         else :
-            syslog.syslog(f'  Device is not Provisioned Trying again in {hibernationTime} seconds')
+            gsdb.gsDebugPrint(f'  Device is not Provisioned Trying again in {hibernationTime} seconds',2)
             time.sleep(hibernationTime)
 
-        syslog.syslog(f' githubWorker loop end, hibernate for {hibernationTime}')
+        gsdb.gsDebugPrint(f' githubWorker loop end, hibernate for {hibernationTime}')
         time.sleep(hibernationTime)
     except Exception as err:
-           syslog.syslog("GitWorker CRASH")
-           syslog.syslog(f"ERROR -> {err}")
+           gsdb.gsDebugPrint("GitWorker CRASH",3)
+           gsdb.gsDebugPrint(f"ERROR -> {err}",3)

@@ -4,7 +4,12 @@ import syslog
 import subprocess
 import gsDebugPrint
 
-syslog.syslog(f'HardwareOOb will start in 3 seconds')
+gsdb = gsDebugPrint.gsDebugPrint("gsHardwareOobWorker")
+
+gsdb.setPrintToTerminal(False)
+gsdb.setPrintToSysLog(True)
+
+gsdb.gsDebugPrint(f'HardwareOOb will start in 3 seconds' , 1)
 time.sleep(3)
 
 oldFilesize ='2000000'
@@ -29,17 +34,17 @@ while(1):
 
     newFilesize = subprocess.check_output("df | grep overlayfs:/overlay |  awk '{ print $4 }'", shell=True).decode().strip()#binary->str->get rid of \n
  
-    syslog.syslog(f'Starting oobCheck')
-    syslog.syslog(f'sdPathExists = {sdPathExists}')
-    syslog.syslog(f'oobCheckPathExists = {oobCheckPathExists}')
+    gsdb.gsDebugPrint(f'Starting oobCheck',1)
+    gsdb.gsDebugPrint(f'sdPathExists = {sdPathExists}')
+    gsdb.gsDebugPrint(f'oobCheckPathExists = {oobCheckPathExists}')
 
-    syslog.syslog(f' newFilesize = {newFilesize}')
-    syslog.syslog(f' oldFilesize = {oldFilesize}')
+    gsdb.gsDebugPrint(f' newFilesize = {newFilesize}')
+    gsdb.gsDebugPrint(f' oldFilesize = {oldFilesize}')
     try :
         if int(newFilesize) < int(oldFilesize):
                     #generates a unique ID or skips it
             if not uniqueID_path_exists:
-                syslog.syslog(f'uniqueID does not exist , adding now')
+                gsdb.gsDebugPrint(f'uniqueID does not exist , adding now')
                 with open('/proc/device-tree/ethernet@1e100000/mac@0/mac-address', mode='rb') as file: # b is important -> binary
                     macBytes = file.read()
                     print(macBytes.hex())
@@ -48,65 +53,65 @@ while(1):
                 f.write(macBytes.hex())
                 f.close()
             else:
-                syslog.syslog(f'uniqueID already exists')
+                gsdb.gsDebugPrint(f'uniqueID already exists')
 
             if sdPathExists:
 
                 if oobCheckPathExists: #step 1 , uses the file resize shell script and deletes OobFlag
 
-                    syslog.syslog(f'Starting file resize')
+                    gsdb.gsDebugPrint(f'Starting file resize')
 
                     os.system('rm /root/systemStateFlags/oobCheck.txt')
 
                     os.system('./root/fileresize.sh')
 
-                    syslog.syslog(f'The file {path_to_oobCheck} and {path_to_sd} exists, rebooting')
+                    gsdb.gsDebugPrint(f'The file {path_to_oobCheck} and {path_to_sd} exists, rebooting')
 
                     os.system('reboot')
 
                     time.sleep(10) # this is needed otherwise device infinite boot loops
 
                 else: #Step 2, factory rests device if fileresize fails
-                    syslog.syslog(f'ERROR: something went wrong during fileresize. Factory resetting now')
-                    syslog.syslog(f' newFilesize = {newFilesize}')
-                    syslog.syslog(f' oldFilesize = {oldFilesize}')
+                    gsdb.gsDebugPrint(f'something went wrong during fileresize. Factory resetting now',4)
+                    gsdb.gsDebugPrint(f' newFilesize = {newFilesize}')
+                    gsdb.gsDebugPrint(f' oldFilesize = {oldFilesize}')
 
                     os.system('echo y | firstboot && reboot now') # factory reset command
 
             else:
-                syslog.syslog(f'No SD card detected for fileresize, retying in {hibernationTime} seconds')
+                gsdb.gsDebugPrint(f'No SD card detected for fileresize, retying in {hibernationTime} seconds',3)
                 time.sleep(hibernationTime)
         else: #Step 3 , fileresize successful --> create new flags
 
             #Creates file resize complete flag
             if fileResizeCompletePathExists :
-                syslog.syslog(f'{path_to_fileResizeComplete} already exists')
+                gsdb.gsDebugPrint(f'{path_to_fileResizeComplete} already exists')
 
             else:
-                syslog.syslog(f'{path_to_fileResizeComplete} does not exists , creating file.')
+                gsdb.gsDebugPrint(f'{path_to_fileResizeComplete} does not exists , creating file.')
                 f = open(path_to_fileResizeComplete, "w") 
                 f.write("file resize complete") 
                 f.close()
 
             #creates hardware oob complete flag
             if hardwareOobCompletePathExists:
-                syslog.syslog(f'{path_to_hardwareOobComplete} already exists')
+                gsdb.gsDebugPrint(f'{path_to_hardwareOobComplete} already exists')
 
             else:
-                syslog.syslog(f'{path_to_hardwareOobComplete} does not exists , creating file.')
+                gsdb.gsDebugPrint(f'{path_to_hardwareOobComplete} does not exists , creating file.')
                 f = open(path_to_hardwareOobComplete, "w") 
                 f.write("hardware oob check complete") 
                 f.close()
 
             hibernationTime = 1800 #changes wait time upon successful run
-            syslog.syslog(f'Hardware Oob has succesfully gone through all its proccesses')
-            syslog.syslog(f'hardare Oob going to sleep for {hibernationTime} seconds')
+            gsdb.gsDebugPrint(f'Hardware Oob has succesfully gone through all its proccesses',1)
+            gsdb.gsDebugPrint(f'hardare Oob going to sleep for {hibernationTime} seconds')
             time.sleep(hibernationTime)
 
     except Exception as err:
-           syslog.syslog("Hardware Oob CRASH")
-           syslog.syslog(f"ERROR -> {err}")
+           gsdb.gsDebugPrint("Hardware Oob CRASH",3)
+           gsdb.gsDebugPrint(f"ERROR -> {err}",3)
            time.sleep(hibernationTime)
 
-syslog.syslog(f'hardare Oob going to sleep for {hibernationTime} seconds')
+gsdb.gsDebugPrint(f'hardare Oob going to sleep for {hibernationTime} seconds')
 time.sleep(hibernationTime)

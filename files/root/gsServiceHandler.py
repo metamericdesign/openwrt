@@ -5,10 +5,10 @@ import gsDebugPrint
 
 gsdb = gsDebugPrint.gsDebugPrint("gsServiceHandler")
 
-gsdb.setPrintToTerminal(True)
+gsdb.setPrintToTerminal(False)
 gsdb.setPrintToSysLog(True)
 
-gsdb.gsDebugPrint(f'Service Handler will start in 50 seconds')
+gsdb.gsDebugPrint(f'Service Handler will start in 50 seconds',1)
 time.sleep(5)
 
 path_to_services = '/etc/init.d/'
@@ -31,6 +31,7 @@ awkPrint = "{ print $1,$4,$5,$6 }"
 
 
 while(1):
+    gsdb.gsDebugPrint(f'Service Handler Started',1)
     WorkersToStart=[]
     ServicesToStart=[]
 
@@ -49,7 +50,7 @@ while(1):
             gsdb.gsDebugPrint('-------------------------------------------------------')
 
         except Exception as err:
-            gsdb.gsDebugPrint(f"ERROR {err} .The proccess ( {tempWorker} ) you are checking does not exist.")
+            gsdb.gsDebugPrint(f"ERROR {err} .The proccess ( {tempWorker} ) you are checking does not exist.",3)
             WorkersToStart.append(tempWorker)
             ServicesToStart.append(tempService)
             gsdb.gsDebugPrint('-------------------------------------------------------')
@@ -61,12 +62,12 @@ while(1):
     for (runWorker,RunService) in zip(WorkersToStart,ServicesToStart):
         try:
             completed_process = subprocess.CompletedProcess (subprocess.run([f"/etc/init.d/{RunService}","start"]),"-1")  
-            gsdb.gsDebugPrint(f"Tried restarting {RunService} Code: {completed_process.returncode}")
+            gsdb.gsDebugPrint(f"Tried restarting {RunService} Code: {completed_process.returncode}",1)
             gsdb.gsDebugPrint('=======================================================')
 
         except Exception as err:
             gsdb.gsDebugPrint(f"ERROR {err}." , 4)
-            gsdb.gsDebugPrint(f"Failed to restart {RunService}")
+            gsdb.gsDebugPrint(f"Failed to restart {RunService}",4)
     
     time.sleep(15)
 
