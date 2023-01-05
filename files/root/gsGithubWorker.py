@@ -1,13 +1,32 @@
 import time
-import os
-import syslog  
+import os 
+import sys
 import json
 import gsDebugPrint
 
 gsdb = gsDebugPrint.gsDebugPrint("gsGithubWorker")
 
-gsdb.setPrintToTerminal(False)
-gsdb.setPrintToSysLog(True)
+if (len(sys.argv)) < 3: #if no arguments default to this
+    gsdb.setPrintToTerminal(False)
+    gsdb.setPrintToSysLog(True)
+
+else:
+
+    setPrintToTerminal = (sys.argv[1])
+    setPrintToSysLog = (sys.argv[2])
+
+    listOfTrue = ["1","True","true","yes","Yes","y","Y"]
+    listOfFalse = ["0","False","false","no","No","n","N"]
+
+    if setPrintToTerminal in listOfTrue:# if true set to true else set to false
+        gsdb.setPrintToTerminal(True)
+    else:
+        gsdb.setPrintToTerminal(False)
+
+    if setPrintToSysLog in listOfFalse: #if false set to false else set to true
+        gsdb.setPrintToSysLog(False)
+    else:
+        gsdb.setPrintToSysLog(True)
 #
 # Get repo list from provisioning, list from data base
 #

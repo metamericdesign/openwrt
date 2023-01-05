@@ -1,6 +1,6 @@
 import time 
 import os
-import syslog 
+import sys
 import json
 from urllib import request
 from urllib.error import HTTPError, URLError
@@ -9,8 +9,27 @@ import gsDebugPrint
 
 gsdb = gsDebugPrint.gsDebugPrint("gsProvisionWorker")
 
-gsdb.setPrintToTerminal(False)
-gsdb.setPrintToSysLog(True)
+if (len(sys.argv)) < 3: #if no arguments default to this
+    gsdb.setPrintToTerminal(False)
+    gsdb.setPrintToSysLog(True)
+
+else:
+
+    setPrintToTerminal = (sys.argv[1])
+    setPrintToSysLog = (sys.argv[2])
+
+    listOfTrue = ["1","True","true","yes","Yes","y","Y"]
+    listOfFalse = ["0","False","false","no","No","n","N"]
+
+    if setPrintToTerminal in listOfTrue:# if true set to true else set to false
+        gsdb.setPrintToTerminal(True)
+    else:
+        gsdb.setPrintToTerminal(False)
+
+    if setPrintToSysLog in listOfFalse: #if false set to false else set to true
+        gsdb.setPrintToSysLog(False)
+    else:
+        gsdb.setPrintToSysLog(True)
 
 #all file paths needed for checking
 gsdb.gsDebugPrint('Provisioning Service Started, waiting 10 seconds.',1)

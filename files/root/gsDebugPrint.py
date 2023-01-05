@@ -1,5 +1,3 @@
-
-import os
 import syslog  
 
 class gsDebugPrint : 
@@ -10,7 +8,7 @@ class gsDebugPrint :
     terminalPrint = False
     sysLogPrint = True
 
-    # 0 Standard print --> messages along the way 
+    # 0 Standard print --> messages along the way
     # 1 Notice --> signifigant system events --> syslog.LOG_NOTICE
     # 2 Warning --> continue but may have signifigance --> syslog.LOG_WARNING
     # 3 Error --> expected/ handled error  --> syslog.LOG_ERR
@@ -42,9 +40,13 @@ class gsDebugPrint :
             sysLogVerb = syslog.LOG_CRIT
             terminalMessage ="   CRITICAL ERROR :"
 
-        # sanatize print 
+        message_type = type(message)
 
-        if type(message) == str :
+        if message_type == int:
+            message = str(message)
+            message_type = type(message)
+
+        if message_type == str :
 
             if self.terminalPrint:
                 terminalMessage += message
@@ -55,11 +57,23 @@ class gsDebugPrint :
 
         else :
 
-            if self.terminalPrint:
-                print ("   CRITICAL ERROR : Debug message type not recognized")
+            try :
+                message = str(message)
+                sysLogVerbTypeWarning = syslog.LOG_WARNING
+                terminalMessageTypeWarning =f"   WARNING : Message sent through was {message_type} not a String "
 
-            if self.sysLogPrint:
-                syslog.syslog(syslog.LOG_CRIT,"Debug message type not recognized")
+                if self.terminalPrint:
+                    terminalMessage += message
+                    print (terminalMessageTypeWarning)
+                    print (terminalMessage)
+
+                if self.sysLogPrint:
+                    syslog.syslog(sysLogVerbTypeWarning ,terminalMessageTypeWarning)
+                    syslog.syslog(sysLogVerb ,message)
+
+            except Exception as err:
+                syslog.syslog(f"ERROR {err} BAD DATA TYPE -->{message_type}.")
+                print(f"ERROR {err} BAD DATA TYPE -->{message_type}.")
 
 
 

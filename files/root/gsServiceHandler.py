@@ -1,12 +1,31 @@
 import time
-import syslog  
+import sys
 import subprocess
 import gsDebugPrint
 
 gsdb = gsDebugPrint.gsDebugPrint("gsServiceHandler")
 
-gsdb.setPrintToTerminal(False)
-gsdb.setPrintToSysLog(True)
+if (len(sys.argv)) < 3: #if no arguments default to this
+    gsdb.setPrintToTerminal(False)
+    gsdb.setPrintToSysLog(True)
+
+else:
+
+    setPrintToTerminal = (sys.argv[1])
+    setPrintToSysLog = (sys.argv[2])
+
+    listOfTrue = ["1","True","true","yes","Yes","y","Y"]
+    listOfFalse = ["0","False","false","no","No","n","N"]
+
+    if setPrintToTerminal in listOfTrue:# if true set to true else set to false
+        gsdb.setPrintToTerminal(True)
+    else:
+        gsdb.setPrintToTerminal(False)
+
+    if setPrintToSysLog in listOfFalse: #if false set to false else set to true
+        gsdb.setPrintToSysLog(False)
+    else:
+        gsdb.setPrintToSysLog(True)
 
 gsdb.gsDebugPrint(f'Service Handler will start in 50 seconds',1)
 time.sleep(5)
