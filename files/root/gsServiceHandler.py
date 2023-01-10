@@ -88,5 +88,5 @@ while(1):
             gsdb.gsDebugPrint(f"ERROR {err}." , 4)
             gsdb.gsDebugPrint(f"Failed to restart {RunService}",4)
     
-    time.sleep(15)
+    time.sleep(30)
 

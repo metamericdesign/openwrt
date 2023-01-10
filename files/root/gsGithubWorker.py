@@ -69,15 +69,19 @@ while(1):
                 time.sleep(20)
 
             #setting up the git clone calls
-            gitlightingpath="/root"
+            gitclonelightingpath="/root"
+            gitpulllightingpath="/root/gsSystems_Lighting"
+
             gitlighting=f'https://{gitHttpsKey}@github.com/metamericdesign/gsSystems_Lighting.git'
-            gitlightingRepo =f'git -C {gitlightingpath} clone {gitlighting}'
-            pulllightingRepo =f'git -C {gitlightingpath} pull {gitlighting}'
+            gitlightingRepo =f'git -C {gitclonelightingpath} clone {gitlighting}'
+            pulllightingRepo =f'git -C {gitpulllightingpath} pull {gitlighting}'
+
             
-            gitphppath="/srv/www" 
+            gitclonephppath="/srv/www"
+            gitpullphppath="/srv/www/BaseStationPHP" 
             gitphp=f'https://{gitHttpsKey}@github.com/metamericdesign/BaseStationPHP.git'
-            gitphpRepo = f'git -C {gitphppath} clone {gitphp}'
-            pullphpRepo = f'git -C {gitphppath} pull {gitphp}'
+            gitphpRepo = f'git -C {gitclonephppath} clone {gitphp}'
+            pullphpRepo = f'git -C {gitpullphppath} pull {gitphp}'
 
             #creating a list to use in the for each loop
             gitRepos = [gitlightingRepo, gitphpRepo] #clone commads for thr repos

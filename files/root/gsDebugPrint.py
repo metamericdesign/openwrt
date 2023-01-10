@@ -3,6 +3,7 @@ import syslog
 class gsDebugPrint : 
 
     def __init__(self , facility :str ) -> None:
+        facility += ".py"
         syslog.openlog(facility)
 
     terminalPrint = False

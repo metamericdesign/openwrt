@@ -39,7 +39,7 @@ path_to_openvpnConfig = '/etc/config/openvpn'
 
 path_to_openvpn = '/dummypath' #dummy path 
 
-gsdb.gsDebugPrint('VPN worker starts in 1000000 seconds.')
+gsdb.gsDebugPrint('VPN worker starts in 10 seconds.')
 time.sleep(10)
 
 while(1):
