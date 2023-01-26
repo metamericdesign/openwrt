@@ -49,11 +49,10 @@ def applyNetworkConfig(base_num, network_number):
     gsdb.gsDebugPrint('    Applying Network Number.')
     os.system(f'uci set network.lan.ipaddr="172.16.{base_num}.1"') # IP Address
     os.system('uci commit network')
-    os.system(f'uci set system.@system[0].hostname="org{network_number}-base_{base_num}"') # HOSTNAME 
+    os.system(f'uci set system.@system[0].hostname="base_{base_num}"') # HOSTNAME 
     os.system('uci commit system')
-    os.system(f'uci add_list dhcp.@dnsmasq[0].address="/dbserver.lan/10.0.{network_number}.4"') # DATABASE CLOUD SERVER
+    os.system(f'uci add_list dhcp.@dnsmasq[0].address="/orgdb.cloud/10.0.{network_number}.1"') # DATABASE CLOUD SERVER
     os.system('uci commit dhcp')
-
     # Restart services 
     gsdb.gsDebugPrint("    reloading system")
     os.system('/etc/init.d/system reload')
@@ -126,6 +125,12 @@ while(1):
                                 org_network_number = bodyDict["org_network_num"]
 
                                 if base_num !="": #Step 4, changes IP address to match base num
+
+                                    #stores org deatils
+                                    f = open(path_to_orgDetails, "w")
+                                    f.write(body)
+                                    f.close()
+
                                     # gets current IP adress
                                     ipv4_lan = subprocess.check_output("ifstatus lan |  jsonfilter -e '@[\"ipv4-address\"][0].address'", shell=True).decode().strip()#binary->str->get rid of \n
                                     gsdb.gsDebugPrint(f"Current ipv4 lan address = {ipv4_lan}")
@@ -158,11 +163,6 @@ while(1):
 
                                             gsdb.gsDebugPrint(f"OLD IP address matches new IP address")
                                             gsdb.gsDebugPrint("saving data to org details and flagging provioning as complete",1)
-
-                                            #stores org deatils
-                                            f = open(path_to_orgDetails, "w")
-                                            f.write(body)
-                                            f.close()
                                             
                                             #flag for provisioning complete
                                             f = open(path_to_provisionComplete, "w")
