@@ -42,6 +42,9 @@ path_to_systemFlags = '/root/systemStateFlags'
 path_to_hardwareOobComplete = f'{path_to_systemFlags}/hardwareOobComplete.txt'
 path_to_provisionComplete = f'{path_to_systemFlags}/provisionComplete.txt'
 path_to_orgDetails = f'{path_to_systemFlags}/orgDetails.txt'
+path_to_firmware_version = '/etc/openwrt_release'
+path_to_hardware_version = '/etc/board.json'
+
 
 prov_url = 'http://gsadminserver.eastus.cloudapp.azure.com:8080/provision.php'
 
@@ -78,9 +81,22 @@ while(1):
                 #gets the unique ID stored on the device
                 with open('/root/systemStateFlags/uniqueID.txt', mode='r') as file:
                         base_unique_id = file.read()
+                        file.close()
+                
+                with open(path_to_firmware_version, mode='r') as file:
+                        firmware_version = file.readlines()[5].split("=")[1].replace("'","")[:-1]
+                        gsdb.gsDebugPrint(firmware_version)
+
+                with open(path_to_hardware_version, mode='r') as file:
+                        hardware_version = json.loads(file.read())["model"]["name"]
+                        gsdb.gsDebugPrint(hardware_version)
 
                 #checks provisioning url to see if the device is allowed
-                data_dict={"base_unique_id" : base_unique_id , "error_verbosity_level": error_verbosity_level}
+                data_dict={
+                    "base_unique_id" : base_unique_id ,
+                    "bs_hw_version" : hardware_version,
+                    "bs_fw_version" : firmware_version,
+                    "error_verbosity_level": error_verbosity_level}
 
                 try:
                     json_data_encoded = json.dumps(data_dict).encode('utf-8')
