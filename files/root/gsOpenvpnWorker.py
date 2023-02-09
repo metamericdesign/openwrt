@@ -123,8 +123,8 @@ while(1):
                 time.sleep(1800)
             
             
-            gsdb.gsDebugPrint(' Loop End, sleeping 30 mins.')    
-            time.sleep(1800)
+            gsdb.gsDebugPrint(' Loop End, sleeping 5 mins.')    
+            time.sleep(300)
     except:
         gsdb.gsDebugPrint(syslog.LOG_ERR,'Loop crash! Sleeping 30 mins.')
     gsdb.gsDebugPrint('Loop exit. Sleeping 2 mins.')
