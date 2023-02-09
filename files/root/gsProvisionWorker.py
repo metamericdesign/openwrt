@@ -42,7 +42,7 @@ path_to_systemFlags = '/root/systemStateFlags'
 path_to_hardwareOobComplete = f'{path_to_systemFlags}/hardwareOobComplete.txt'
 path_to_provisionComplete = f'{path_to_systemFlags}/provisionComplete.txt'
 path_to_orgDetails = f'{path_to_systemFlags}/orgDetails.txt'
-path_to_firmware_version = '/etc/openwrt_release'
+path_to_firmware_version = f'{path_to_systemFlags}/base_station_firmware_id.txt'
 path_to_hardware_version = '/etc/board.json'
 
 
@@ -84,8 +84,8 @@ while(1):
                         file.close()
                 
                 with open(path_to_firmware_version, mode='r') as file:
-                        firmware_version = file.readlines()[5].split("=")[1].replace("'","")[:-1]
-                        gsdb.gsDebugPrint(firmware_version)
+                        base_station_firmware_id = file.read()
+                        gsdb.gsDebugPrint(base_station_firmware_id)
 
                 with open(path_to_hardware_version, mode='r') as file:
                         hardware_version = json.loads(file.read())["model"]["name"]
@@ -95,7 +95,7 @@ while(1):
                 data_dict={
                     "base_unique_id" : base_unique_id ,
                     "bs_hw_version" : hardware_version,
-                    "bs_fw_version" : firmware_version,
+                    "base_station_firmware_id" : base_station_firmware_id,
                     "error_verbosity_level": error_verbosity_level}
 
                 try:
@@ -210,7 +210,7 @@ while(1):
                             #if problem occurs or device not allowed errors out
 
                 except (HTTPError, URLError, Exception) as err:
-                    gsdb.gsDebugPrint(f"Erroneous response: {err} - no connection to provisioning url",3)
+                    gsdb.gsDebugPrint(f"Erroneous response: {err}",3)
                 gsdb.gsDebugPrint(f" Sleep {hibernationTime} seconds.")
                 time.sleep(hibernationTime)
         

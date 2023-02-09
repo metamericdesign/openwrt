@@ -33,18 +33,17 @@ time.sleep(60)
 
 path_to_newFirmware = '/tmp/newfirmware.bin'
 
-while(1)
-{
+while(1):
+
     newFirmware_path_exists = os.path.exists(path_to_newFirmware)
 
-    if(newFirmware_path_exists)
-    {
+    if(newFirmware_path_exists):
+    
         gsdb.gsDebugPrint(f'New Firmware found, doing sysupgrade in 5 seconds' , 1)
         time.sleep(5)
         os.system(f'sysupgrade -n {path_to_newFirmware}')
-    }
-    else
-    {
-        time.sleep(30);
-    }
-}
+    
+    else:
+    
+        time.sleep(30)
+    
