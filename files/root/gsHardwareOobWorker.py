@@ -83,6 +83,8 @@ while(1):
                     os.system('rm /root/systemStateFlags/oobCheck.txt')
 
                     os.system('./root/fileresize.sh')
+                    
+                    time.sleep(10)
 
                     gsdb.gsDebugPrint(f'The file {path_to_oobCheck} and {path_to_sd} exists, rebooting')
 

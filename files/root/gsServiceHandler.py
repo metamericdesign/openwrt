@@ -60,13 +60,9 @@ while(1):
         try:
             tempWorker= worker
             tempService= service
-            gsdb.gsDebugPrint(f'worker = {worker}')
             tempString = worker
             stat = subprocess.check_output(f"ps | grep {worker} |  awk '{awkPrint}' | grep -v grep | grep -v /bin/sh ", shell=True).decode().strip()#binary->str->get rid of \n
             stat_list = (stat.split(" "))
-
-            gsdb.gsDebugPrint(stat)
-            gsdb.gsDebugPrint('-------------------------------------------------------')
 
         except Exception as err:
             gsdb.gsDebugPrint(f"ERROR {err} .The proccess ( {tempWorker} ) you are checking does not exist.",3)
@@ -76,7 +72,6 @@ while(1):
 
 
     gsdb.gsDebugPrint(f"WorkersToStart = {WorkersToStart}")
-    gsdb.gsDebugPrint(f"ServicesToStart = {WorkersToStart}")
 
     for (runWorker,RunService) in zip(WorkersToStart,ServicesToStart):
         try:

@@ -120,7 +120,7 @@ while(1):
                     print(f"Erroneous response: - no connection to provisioning url")
             else:
                 gsdb.gsDebugPrint('  VPN already setup.')
-                time.sleep(1800)
+                time.sleep(500)
             
             
             gsdb.gsDebugPrint(' Loop End, sleeping 5 mins.')    
