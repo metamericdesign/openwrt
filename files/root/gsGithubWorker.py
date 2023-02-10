@@ -112,7 +112,7 @@ while(1):
                 if gitExists :
                     gsdb.gsDebugPrint(f'    Git {workerName} exists, attempting to pull newest version if one is available')
                     os.system(f'{repoPull}')
-                    hibernationTime = 300
+                    hibernationTime = 900
             
         
         

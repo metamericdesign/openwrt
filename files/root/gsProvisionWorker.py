@@ -53,6 +53,7 @@ def applyNetworkConfig(base_num, network_number):
     os.system(f'uci set network.lan.ipaddr="172.16.{base_num}.1"') # IP Address
     os.system('uci commit network')
     os.system(f'uci set system.@system[0].hostname="base_{base_num}"') # HOSTNAME 
+    os.system('uci set system.@system[0].log_ip="gslogserver.eastus.cloudapp.azure.com"') # Log Server
     os.system('uci commit system')
     os.system(f'uci add_list dhcp.@dnsmasq[0].address="/orgdb.cloud/10.0.{network_number}.1"') # DATABASE CLOUD SERVER
     os.system('uci commit dhcp')

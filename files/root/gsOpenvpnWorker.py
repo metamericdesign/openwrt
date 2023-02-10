@@ -38,6 +38,7 @@ path_to_orgDetails = f'{path_to_systemFlags}/orgDetails.txt'
 path_to_openvpnConfig = '/etc/config/openvpn'
 
 path_to_openvpn = '/dummypath' #dummy path 
+hibernationTime = 15
 
 gsdb.gsDebugPrint('VPN worker starts in 10 seconds.')
 time.sleep(10)
@@ -110,6 +111,7 @@ while(1):
                         f.write(f"\n\toption enabled '1'")
                         f.close()
                         gsdb.gsDebugPrint('   Restarting openvpn.')
+                        hibernationTime = 500
                         os.system('/etc/init.d/openvpn restart')
                     else:
                         gsdb.gsDebugPrint(syslog.LOG_ERR,'Download Failed.')
@@ -119,15 +121,15 @@ while(1):
                     gsdb.gsDebugPrint(f"Erroneous response: - no connection to provisioning url")
                     print(f"Erroneous response: - no connection to provisioning url")
             else:
-                gsdb.gsDebugPrint('  VPN already setup.')
-                time.sleep(500)
+                gsdb.gsDebugPrint(f'  VPN already setup. sleeping {hibernationTime}')
+                time.sleep(hibernationTime)
             
             
-            gsdb.gsDebugPrint(' Loop End, sleeping 5 mins.')    
-            time.sleep(300)
+            gsdb.gsDebugPrint(f' Loop End, sleeping {hibernationTime}')    
+            time.sleep(hibernationTime)
     except:
         gsdb.gsDebugPrint(syslog.LOG_ERR,'Loop crash! Sleeping 30 mins.')
-    gsdb.gsDebugPrint('Loop exit. Sleeping 2 mins.')
-    time.sleep(1800)    
+    gsdb.gsDebugPrint(f'Loop exit. sleeping {hibernationTime}')
+    time.sleep(hibernationTime)    
 
 gsdb.gsDebugPrint(syslog.LOG_ERR,'VPN Worker END.')
