@@ -28,6 +28,7 @@ else:
 
 gsdb.gsDebugPrint(f'Service Handler will start in 50 seconds',1)
 time.sleep(50)
+gsdb.gsDebugPrint(f'Service Handler Started',1)
 
 path_to_services = '/etc/init.d/'
 path_to_proccesses = '/root/'
@@ -67,3 +68,5 @@ while(1):
             gsdb.gsDebugPrint(f"Failed to restart {RunService}",4)
     
     time.sleep(30)
+
+gsdb.gsDebugPrint(f"gsServiceHandler has crashed",4)
