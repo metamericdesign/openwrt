@@ -31,8 +31,8 @@ else:
 # Get repo list from provisioning, list from data base
 #
 
-gsdb.gsDebugPrint(f'Github worker will start in 30 seconds',1)
-time.sleep(30)
+gsdb.gsDebugPrint(f'Github worker will start in 45 seconds',1)
+time.sleep(45)
 
 hibernationTime = 15
 

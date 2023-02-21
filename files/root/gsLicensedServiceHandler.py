@@ -29,8 +29,8 @@ else:
     else:
         gsdb.setPrintToSysLog(True)
 
-gsdb.gsDebugPrint(f'Licensed Service Handler will start in 50 seconds',1)
-time.sleep(50)
+gsdb.gsDebugPrint(f'Licensed Service Handler will start in 35 seconds',1)
+time.sleep(35)
 gsdb.gsDebugPrint(f'liscensed Service Handler Started',1)
 
 path_to_services = '/etc/init.d/'

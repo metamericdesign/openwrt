@@ -40,8 +40,8 @@ path_to_openvpnConfig = '/etc/config/openvpn'
 path_to_openvpn = '/dummypath' #dummy path 
 hibernationTime = 15
 
-gsdb.gsDebugPrint('VPN worker starts in 10 seconds.')
-time.sleep(10)
+gsdb.gsDebugPrint('VPN worker starts in 30 seconds.')
+time.sleep(30)
 
 while(1):
     try:
@@ -52,7 +52,7 @@ while(1):
             openvpnPathexists = os.path.exists(path_to_openvpn)
             gsdb.gsDebugPrint(f'    provisionCompletePathexists = {provisionCompletePathexists}')
             gsdb.gsDebugPrint(f'    openvpnPathexists = {openvpnPathexists}')
-            if (provisionCompletePathexists and not openvpnPathexists):
+            if (provisionCompletePathexists):
                 gsdb.gsDebugPrint('  VPN Download Required.')
                 try:
                     f = open(path_to_orgDetails, "r")

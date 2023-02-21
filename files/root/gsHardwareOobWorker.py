@@ -28,8 +28,8 @@ else:
     else:
         gsdb.setPrintToSysLog(True)
 
-gsdb.gsDebugPrint(f'HardwareOOb will start in 3 seconds' , 1)
-time.sleep(3)
+gsdb.gsDebugPrint(f'HardwareOOb will start in 10 seconds' , 1)
+time.sleep(5)
 
 oldFilesize ='2000000'
 hibernationTime = 15
@@ -83,12 +83,14 @@ while(1):
                     os.system('rm /root/systemStateFlags/oobCheck.txt')
 
                     os.system('./root/fileresize.sh')
+
+                    gsdb.gsDebugPrint(f'this is printed along time after')
                     
-                    time.sleep(10)
+                    time.sleep(20)
 
                     gsdb.gsDebugPrint(f'The file {path_to_oobCheck} and {path_to_sd} exists, rebooting')
 
-                    os.system('reboot')
+                    #os.system('reboot')
 
                     time.sleep(10) # this is needed otherwise device infinite boot loops
 
@@ -134,5 +136,4 @@ while(1):
            gsdb.gsDebugPrint(f"ERROR -> {err}",3)
            time.sleep(hibernationTime)
 
-gsdb.gsDebugPrint(f'hardare Oob going to sleep for {hibernationTime} seconds')
-time.sleep(hibernationTime)
+gsdb.gsDebugPrint(f'hardareOobWorker Ended',4)

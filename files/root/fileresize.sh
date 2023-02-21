@@ -17,4 +17,9 @@ uci set fstab.overlay.target="/overlay"
 uci commit fstab
 mount /dev/mmcblk0p1 /mnt
 
+sleep 10
+
 tar -C /overlay -cvf - . | tar -C /mnt -xf -
+
+reboot
+

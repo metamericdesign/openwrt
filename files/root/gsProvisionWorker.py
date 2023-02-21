@@ -32,8 +32,8 @@ else:
         gsdb.setPrintToSysLog(True)
 
 #all file paths needed for checking
-gsdb.gsDebugPrint('Provisioning Service Started, waiting 10 seconds.',1)
-time.sleep(10)
+gsdb.gsDebugPrint('Provisioning Service Started, waiting 15 seconds.',1)
+time.sleep(15)
 hibernationTime = 15
 
 error_verbosity_level=1
@@ -56,6 +56,12 @@ def applyNetworkConfig(base_num, network_number):
     os.system('uci set system.@system[0].log_ip="gslogserver.eastus.cloudapp.azure.com"') # Log Server
     os.system('uci commit system')
     os.system(f'uci add_list dhcp.@dnsmasq[0].address="/orgdb.cloud/10.0.{network_number}.1"') # DATABASE CLOUD SERVER
+    os.system('uci commit dhcp')
+    os.system('uci add dhcp domain')
+    os.system('uci commit dhcp')
+    os.system('uci add_list dhcp.@domain[0].name="dbserver.lan"')
+    os.system('uci commit dhcp')
+    os.system(f'uci add_list dhcp.@domain[0].ip=10.0.{network_number}.4')
     os.system('uci commit dhcp')
     # Restart services 
     gsdb.gsDebugPrint("    reloading system")
@@ -221,7 +227,6 @@ while(1):
         except Exception as err:
            gsdb.gsDebugPrint("Provisioning Service Crash!",3)
            gsdb.gsDebugPrint(f"ERROR -> {err}",3)
-           time.sleep(20)
+           time.sleep(hibernationTime)
 
-gsdb.gsDebugPrint(f" Provisioning loop END. Wait 10 seconds.")
-time.sleep(10)
+gsdb.gsDebugPrint(f" ProvisioningWorker end. Wait 10 seconds.",4)

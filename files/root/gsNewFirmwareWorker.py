@@ -1,7 +1,6 @@
 import time
 import sys
 import os
-import subprocess
 import gsDebugPrint
 
 gsdb = gsDebugPrint.gsDebugPrint("gsNewFirmwareWorker")
